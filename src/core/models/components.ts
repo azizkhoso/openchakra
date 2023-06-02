@@ -45,7 +45,7 @@ const components = createModel({
     loadDemo(state: ComponentsState, type: TemplateType): ComponentsState {
       return {
         ...state,
-        selectedId: 'comp-root',
+        selectedId: 'root',
         components: templates[type],
       }
     },

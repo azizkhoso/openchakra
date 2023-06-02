@@ -18,7 +18,7 @@ export type RootState = {
 const version = parseInt(process.env.NEXT_PUBLIC_VERSION || '1', 10)
 
 const persistConfig = {
-  key: `openchakra_v${version}`,
+  key: `intellisite_ai_v${version}`,
   storage,
   whitelist: ['present'],
   version,

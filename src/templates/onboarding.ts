@@ -429,7 +429,7 @@ export const onboarding: IComponents = {
   'comp-K6GPAPKNQACEE': {
     id: 'comp-K6GPAPKNQACEE',
     props: {
-      children: '⚡️Welcome to OpenChakra',
+      children: '⚡️Welcome to IntelliSite AI',
       fontSize: '3xl',
       fontWeight: 'bold',
     },
