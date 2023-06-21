@@ -45,8 +45,15 @@ const components = createModel({
     loadDemo(state: ComponentsState, type: TemplateType): ComponentsState {
       return {
         ...state,
-        selectedId: 'root',
+        selectedId: 'comp-root',
         components: templates[type],
+      }
+    },
+    setState(state: ComponentsState, code: IComponents): ComponentsState {
+      return {
+        ...state,
+        selectedId: Object.keys(code)[0],
+        components: code,
       }
     },
     resetProps(state: ComponentsState, componentId: string): ComponentsState {

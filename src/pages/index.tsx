@@ -1,5 +1,5 @@
 import React from 'react'
-import { Flex, Box } from '@chakra-ui/react'
+import { Flex, Box, Input, Text } from '@chakra-ui/react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { Global } from '@emotion/react'
@@ -11,6 +11,7 @@ import EditorErrorBoundary from '~components/errorBoundaries/EditorErrorBoundary
 import Editor from '~components/editor/Editor'
 import { InspectorProvider } from '~contexts/inspector-context'
 import Inspector from '~components/inspector/Inspector'
+import ChatBot from '~components/ChatBot'
 
 const App = () => {
   useShortcuts()
@@ -26,14 +27,14 @@ const App = () => {
       <Header />
       <DndProvider backend={HTML5Backend}>
         <Flex h="calc(100vh - 3rem)">
-          <Sidebar />
+          {/* <Sidebar /> */}
           <EditorErrorBoundary>
             <Box bg="white" flex={1} position="relative">
               <Editor />
             </Box>
           </EditorErrorBoundary>
 
-          <Box
+          {/* <Box
             maxH="calc(100vh - 3rem)"
             flex="0 0 15rem"
             bg="#f7fafc"
@@ -44,8 +45,9 @@ const App = () => {
             <InspectorProvider>
               <Inspector />
             </InspectorProvider>
-          </Box>
+          </Box> */}
         </Flex>
+        <ChatBot />
       </DndProvider>
     </>
   )
