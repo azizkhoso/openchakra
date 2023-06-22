@@ -1,5 +1,7 @@
 import { Box, Button, Input, Text } from '@chakra-ui/react'
 import React from 'react'
+import { useSelector } from 'react-redux'
+import { getComponents } from '~core/selectors/components'
 import useDispatch from '~hooks/useDispatch'
 import { TemplateType } from '~templates'
 
@@ -7,6 +9,7 @@ const demos = ['ph', 'onboarding']
 
 export default function ChatBot() {
   const dispatch = useDispatch()
+  const components = useSelector(getComponents)
   const [isLoading, setLoading] = React.useState(false)
   const [prompt, setPrompt] = React.useState('')
   function loadDemo() {
@@ -16,7 +19,6 @@ export default function ChatBot() {
     console.log(demo, index)
     dispatch.components.loadDemo(demo as TemplateType)
   }
-
   function getCode() {
     setLoading(true)
     fetch('http://localhost:5000/predict', {
@@ -26,9 +28,13 @@ export default function ChatBot() {
       },
       body: JSON.stringify({
         message: prompt,
+        // state: components,
       }),
     })
-      .then(res => res.json())
+      .then(res => {
+        console.log(res.body)
+        return res.json()
+      })
       .then(data => dispatch.components.setState(JSON.parse(data.content)))
       .catch(err => console.error(err))
       .finally(() => {

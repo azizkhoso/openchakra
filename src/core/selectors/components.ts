@@ -9,7 +9,6 @@ export const getComponentBy = (nameOrId: string | IComponent['id']) => (
 ) => state.components.present.components[nameOrId]
 
 export const getSelectedComponent = (state: RootState) => {
-  console.log({ state })
   return state.components.present.components[
     state.components.present.selectedId
   ]

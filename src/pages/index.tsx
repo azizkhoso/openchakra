@@ -34,7 +34,7 @@ const App = () => {
             </Box>
           </EditorErrorBoundary>
 
-          {/* <Box
+          <Box
             maxH="calc(100vh - 3rem)"
             flex="0 0 15rem"
             bg="#f7fafc"
@@ -45,7 +45,7 @@ const App = () => {
             <InspectorProvider>
               <Inspector />
             </InspectorProvider>
-          </Box> */}
+          </Box>
         </Flex>
         <ChatBot />
       </DndProvider>

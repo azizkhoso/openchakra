@@ -50,6 +50,7 @@ const components = createModel({
       }
     },
     setState(state: ComponentsState, code: IComponents): ComponentsState {
+      console.log('selectedId', Object.keys(code)[0])
       return {
         ...state,
         selectedId: Object.keys(code)[0],
