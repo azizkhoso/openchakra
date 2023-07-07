@@ -1,4 +1,5 @@
 import { Box, Button, Input, Text } from '@chakra-ui/react'
+import axios from 'axios'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { getComponents } from '~core/selectors/components'
@@ -21,21 +22,9 @@ export default function ChatBot() {
   }
   function getCode() {
     setLoading(true)
-    fetch('http://localhost:5000/predict', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: prompt,
-        // state: components,
-      }),
-    })
-      .then(res => {
-        console.log(res.body)
-        return res.json()
-      })
-      .then(data => dispatch.components.setState(JSON.parse(data.content)))
+    axios
+      .post('http://localhost:5000/predict', { message: prompt })
+      .then(res => dispatch.components.setState(res.data))
       .catch(err => console.error(err))
       .finally(() => {
         setLoading(false)
