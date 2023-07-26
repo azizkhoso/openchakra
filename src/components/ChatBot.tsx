@@ -8,6 +8,49 @@ import { TemplateType } from '~templates'
 
 const demos = ['ph', 'onboarding']
 
+function createComponentTree(
+  componentTreeDict: any,
+  finalDict: any = {},
+  parent = 'root',
+) {
+  let childrenIds = []
+
+  if (
+    componentTreeDict.children === null ||
+    componentTreeDict.children === undefined
+  ) {
+    componentTreeDict.children = []
+  } else if (Array.isArray(componentTreeDict.children)) {
+    for (let ch of componentTreeDict.children) {
+      if (typeof ch !== 'string') {
+        if (ch.type === 'Text') {
+          if (typeof ch.props !== 'object') {
+            ch.props = {}
+          }
+          ch.props.children = ch.children[0] || 'Lorem ipsum'
+        }
+        createComponentTree(ch, finalDict, componentTreeDict.id)
+        childrenIds.push(ch.id)
+      }
+    }
+  }
+
+  if (
+    componentTreeDict.props === null ||
+    componentTreeDict.props === undefined
+  ) {
+    componentTreeDict.props = {}
+  }
+
+  componentTreeDict.children = childrenIds
+  if (!componentTreeDict.id)
+    componentTreeDict.id = 'comp-' + Date.now().toString()
+  finalDict[componentTreeDict.id] = componentTreeDict
+  finalDict[componentTreeDict.id].parent = parent
+
+  return finalDict
+}
+
 export default function ChatBot() {
   const dispatch = useDispatch()
   const components = useSelector(getComponents)
@@ -23,8 +66,35 @@ export default function ChatBot() {
   function getCode() {
     setLoading(true)
     axios
-      .post('http://localhost:5000/predict', { message: prompt })
-      .then(res => dispatch.components.setState(res.data))
+      .post('http://localhost:5000/predict', {
+        message: prompt,
+        state: components,
+      })
+      // .then(res => dispatch.components.setState(res.data))
+      .then(res =>
+        createComponentTree(
+          JSON.parse(res.data.function_call.arguments).componentsTree,
+        ),
+      )
+      .then(d => {
+        const rootChildren: string[] = []
+        Object.keys(d).forEach(k => {
+          if (d[k].parent === 'root') rootChildren.push(k)
+        })
+        const st = {
+          root: {
+            id: 'root',
+            parent: 'root',
+            type: 'Box',
+            children: rootChildren,
+            props: {},
+          },
+          ...d,
+        }
+        console.log({ st })
+        if (d.root) dispatch.components.setState(st)
+        else dispatch.components.setState(st)
+      })
       .catch(err => console.error(err))
       .finally(() => {
         setLoading(false)
@@ -46,7 +116,7 @@ export default function ChatBot() {
       border="2px solid green"
       rounded="lg"
     >
-      <Text>Enter your prompt here</Text>
+      <Text as="p">Enter your prompt here</Text>
       <Input
         type="text"
         multiple

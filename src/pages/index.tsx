@@ -27,7 +27,7 @@ const App = () => {
       <Header />
       <DndProvider backend={HTML5Backend}>
         <Flex h="calc(100vh - 3rem)">
-          {/* <Sidebar /> */}
+          <Sidebar />
           <EditorErrorBoundary>
             <Box bg="white" flex={1} position="relative">
               <Editor />
