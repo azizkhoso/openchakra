@@ -56,6 +56,27 @@ export default function ChatBot() {
   const components = useSelector(getComponents)
   const [isLoading, setLoading] = React.useState(false)
   const [prompt, setPrompt] = React.useState('')
+
+  const addComponent = (type: string, componentId: string, parent: string) => {
+    return Promise.resolve(
+      dispatch.components.addComponent({
+        parentName: parent,
+        type: type as ComponentType,
+        testId: componentId,
+      }),
+    )
+  }
+
+  const updateProps = (componentId: string, prop: string, value: string) => {
+    return Promise.resolve(
+      dispatch.components.updateProps({
+        id: componentId,
+        name: prop,
+        value: value,
+      }),
+    )
+  }
+
   function loadDemo() {
     const index =
       Number.parseInt((Math.random() * 100).toFixed(0)) % demos.length
@@ -63,6 +84,7 @@ export default function ChatBot() {
     console.log(demo, index)
     dispatch.components.loadDemo(demo as TemplateType)
   }
+
   function getCode() {
     setLoading(true)
     axios
@@ -71,12 +93,22 @@ export default function ChatBot() {
         state: components,
       })
       // .then(res => dispatch.components.setState(res.data))
-      .then(res =>
-        createComponentTree(
-          JSON.parse(res.data.function_call.arguments).componentsTree,
-        ),
-      )
-      .then(d => {
+      .then(res => JSON.parse(res.data.function_call.arguments).functionsArray)
+      .then(async arr => {
+        for (let i = 0; i < arr.length; i += 1) {
+          console.log(arr[i])
+          if (arr[i].functionName === 'addComponent') {
+            await addComponent(
+              arr[i].type,
+              arr[i].componentId,
+              arr[i].parentComponentId || 'root',
+            )
+          } else if (arr[i].functionName === 'updateProps') {
+            await updateProps(arr[i].componentId, arr[i].prop, arr[i].value)
+          }
+        }
+      })
+      /* .then(d => {
         const rootChildren: string[] = []
         Object.keys(d).forEach(k => {
           if (d[k].parent === 'root') rootChildren.push(k)
@@ -94,7 +126,7 @@ export default function ChatBot() {
         console.log({ st })
         if (d.root) dispatch.components.setState(st)
         else dispatch.components.setState(st)
-      })
+      }) */
       .catch(err => console.error(err))
       .finally(() => {
         setLoading(false)
