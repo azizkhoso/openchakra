@@ -77,6 +77,16 @@ export default function ChatBot() {
     )
   }
 
+  const deleteComponent = (componentId: string) => {
+    return Promise.resolve(dispatch.components.deleteComponent(componentId))
+  }
+
+  const moveComponent = (componentId: string, parentId: string) => {
+    return Promise.resolve(
+      dispatch.components.moveComponent({ componentId, parentId }),
+    )
+  }
+
   function loadDemo() {
     const index =
       Number.parseInt((Math.random() * 100).toFixed(0)) % demos.length
@@ -105,6 +115,10 @@ export default function ChatBot() {
             )
           } else if (arr[i].functionName === 'updateProps') {
             await updateProps(arr[i].componentId, arr[i].prop, arr[i].value)
+          } else if (arr[i].functionName === 'deleteComponent') {
+            await deleteComponent(arr[i].componentId)
+          } else if (arr[i].functionName === 'moveComponent') {
+            await moveComponent(arr[i].componentId, arr[i].parentId)
           }
         }
       })
