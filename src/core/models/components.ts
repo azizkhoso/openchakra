@@ -29,6 +29,16 @@ export const INITIAL_COMPONENTS: IComponents = {
   },
 }
 
+function move(input: any[], from: number, to: number) {
+  let numberOfDeletedElm = 1
+
+  const elm = input.splice(from, numberOfDeletedElm)[0]
+
+  numberOfDeletedElm = 0
+
+  input.splice(to, numberOfDeletedElm, elm)
+}
+
 const components = createModel({
   state: {
     components: INITIAL_COMPONENTS,
@@ -107,6 +117,18 @@ const components = createModel({
           component,
           draftState.components,
         )
+      })
+    },
+    changeIndex(
+      state: ComponentsState,
+      payload: { componentId: string; targetIndex: number },
+    ) {
+      return produce(state, (draftSate: ComponentsState) => {
+        const parentId = draftSate.components[payload.componentId].parent
+        const parentChildren = draftSate.components[parentId].children
+        const idx = parentChildren.findIndex(e => e === payload.componentId)
+        move(parentChildren, idx, payload.targetIndex)
+        draftSate.components[parentId].children = parentChildren
       })
     },
     moveComponent(

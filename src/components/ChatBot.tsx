@@ -87,6 +87,12 @@ export default function ChatBot() {
     )
   }
 
+  const changeIndex = (componentId: string, targetIndex: number) => {
+    return Promise.resolve(
+      dispatch.components.changeIndex({ componentId, targetIndex }),
+    )
+  }
+
   function loadDemo() {
     const index =
       Number.parseInt((Math.random() * 100).toFixed(0)) % demos.length
@@ -94,6 +100,8 @@ export default function ChatBot() {
     console.log(demo, index)
     dispatch.components.loadDemo(demo as TemplateType)
   }
+
+  console.log({ c: components })
 
   function getCode() {
     setLoading(true)
@@ -119,6 +127,8 @@ export default function ChatBot() {
             await deleteComponent(arr[i].componentId)
           } else if (arr[i].functionName === 'moveComponent') {
             await moveComponent(arr[i].componentId, arr[i].parentId)
+          } else if (arr[i].functionName === 'changeIndex') {
+            await changeIndex(arr[i].componentId, arr[i].targetIndex)
           }
         }
       })
