@@ -1,4 +1,14 @@
-import { Box, Button, Input, Text } from '@chakra-ui/react'
+import { ChatIcon, CloseIcon } from '@chakra-ui/icons'
+import {
+  Box,
+  Button,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalContent,
+  Textarea,
+  useDisclosure,
+} from '@chakra-ui/react'
 import axios from 'axios'
 import React from 'react'
 import { useSelector } from 'react-redux'
@@ -8,51 +18,9 @@ import { TemplateType } from '~templates'
 
 const demos = ['ph', 'onboarding']
 
-function createComponentTree(
-  componentTreeDict: any,
-  finalDict: any = {},
-  parent = 'root',
-) {
-  let childrenIds = []
-
-  if (
-    componentTreeDict.children === null ||
-    componentTreeDict.children === undefined
-  ) {
-    componentTreeDict.children = []
-  } else if (Array.isArray(componentTreeDict.children)) {
-    for (let ch of componentTreeDict.children) {
-      if (typeof ch !== 'string') {
-        if (ch.type === 'Text') {
-          if (typeof ch.props !== 'object') {
-            ch.props = {}
-          }
-          ch.props.children = ch.children[0] || 'Lorem ipsum'
-        }
-        createComponentTree(ch, finalDict, componentTreeDict.id)
-        childrenIds.push(ch.id)
-      }
-    }
-  }
-
-  if (
-    componentTreeDict.props === null ||
-    componentTreeDict.props === undefined
-  ) {
-    componentTreeDict.props = {}
-  }
-
-  componentTreeDict.children = childrenIds
-  if (!componentTreeDict.id)
-    componentTreeDict.id = 'comp-' + Date.now().toString()
-  finalDict[componentTreeDict.id] = componentTreeDict
-  finalDict[componentTreeDict.id].parent = parent
-
-  return finalDict
-}
-
 export default function ChatBot() {
   const dispatch = useDispatch()
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const components = useSelector(getComponents)
   const [isLoading, setLoading] = React.useState(false)
   const [prompt, setPrompt] = React.useState('')
@@ -101,8 +69,6 @@ export default function ChatBot() {
     dispatch.components.loadDemo(demo as TemplateType)
   }
 
-  console.log({ c: components })
-
   function getCode() {
     setLoading(true)
     axios
@@ -132,25 +98,6 @@ export default function ChatBot() {
           }
         }
       })
-      /* .then(d => {
-        const rootChildren: string[] = []
-        Object.keys(d).forEach(k => {
-          if (d[k].parent === 'root') rootChildren.push(k)
-        })
-        const st = {
-          root: {
-            id: 'root',
-            parent: 'root',
-            type: 'Box',
-            children: rootChildren,
-            props: {},
-          },
-          ...d,
-        }
-        console.log({ st })
-        if (d.root) dispatch.components.setState(st)
-        else dispatch.components.setState(st)
-      }) */
       .catch(err => console.error(err))
       .finally(() => {
         setLoading(false)
@@ -159,31 +106,49 @@ export default function ChatBot() {
   }
 
   return (
-    <Box
-      display="flex"
-      flexDir="column"
-      position="absolute"
-      bottom="4"
-      right="4"
-      bgColor="white"
-      maxW="400px"
-      w="full"
-      p="2"
-      border="2px solid green"
-      rounded="lg"
-    >
-      <Text as="p">Enter your prompt here</Text>
-      <Input
-        type="text"
-        multiple
-        border="1px solid gray"
-        isDisabled={isLoading}
-        value={prompt}
-        onChange={e => setPrompt(e.target.value)}
+    <React.Fragment>
+      <IconButton
+        aria-label="chat bot button"
+        pos="absolute"
+        bottom="4"
+        right="4"
+        rounded="full"
+        colorScheme="green"
+        icon={isOpen ? <CloseIcon /> : <ChatIcon />}
+        onClick={() => (isOpen ? onClose() : onOpen())}
       />
-      <Button disabled={isLoading} onClick={() => getCode()}>
-        {isLoading ? 'Loading' : 'Load'}
-      </Button>
-    </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalContent p={0} display="flex" flexDir="column" mt="auto">
+          <ModalBody p={0} display="flex" flexDir="column">
+            <Box
+              display={isOpen ? 'flex' : 'none'}
+              flexDir="column"
+              gap={2}
+              bgColor="white"
+              w="full"
+              p="2"
+              border="2px solid green"
+              rounded="lg"
+            >
+              <Box>Enter your prompt here</Box>
+              <Textarea
+                rows={2}
+                border="1px solid gray"
+                isDisabled={isLoading}
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+              />
+              <Button
+                type="submit"
+                disabled={isLoading}
+                onClick={() => getCode()}
+              >
+                {isLoading ? 'Loading' : 'Apply'}
+              </Button>
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </React.Fragment>
   )
 }
