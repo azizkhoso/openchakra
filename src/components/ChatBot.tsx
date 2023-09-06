@@ -83,18 +83,22 @@ export default function ChatBot() {
           console.log(arr[i])
           if (arr[i].functionName === 'addComponent') {
             await addComponent(
-              arr[i].type,
-              arr[i].componentId,
-              arr[i].parentComponentId || 'root',
+              arr[i].args.type,
+              arr[i].args.componentId,
+              arr[i].args.parentComponentId || 'root',
             )
           } else if (arr[i].functionName === 'updateProps') {
-            await updateProps(arr[i].componentId, arr[i].prop, arr[i].value)
+            await updateProps(
+              arr[i].args.componentId,
+              arr[i].args.prop,
+              arr[i].args.value,
+            )
           } else if (arr[i].functionName === 'deleteComponent') {
-            await deleteComponent(arr[i].componentId)
+            await deleteComponent(arr[i].args.componentId)
           } else if (arr[i].functionName === 'moveComponent') {
-            await moveComponent(arr[i].componentId, arr[i].parentId)
+            await moveComponent(arr[i].args.componentId, arr[i].args.parentId)
           } else if (arr[i].functionName === 'changeIndex') {
-            await changeIndex(arr[i].componentId, arr[i].targetIndex)
+            await changeIndex(arr[i].args.componentId, arr[i].args.targetIndex)
           }
         }
       })
