@@ -72,7 +72,7 @@ export default function ChatBot() {
   function getCode() {
     setLoading(true)
     axios
-      .post('http://localhost:5000/predict', {
+      .post('https://azizkhoso.pythonanywhere.com/predict', {
         message: prompt,
         state: components,
       })
