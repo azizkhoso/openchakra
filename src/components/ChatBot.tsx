@@ -79,28 +79,34 @@ export default function ChatBot() {
       // .then(res => dispatch.components.setState(res.data))
       .then(res => JSON.parse(res.data.function_call.arguments).functionsArray)
       .then(async arr => {
+        console.log('Executing NLP Command')
         for (let i = 0; i < arr.length; i += 1) {
-          console.log(arr[i])
-          if (arr[i].functionName === 'addComponent') {
-            await addComponent(
-              arr[i].args.type,
-              arr[i].args.componentId,
-              arr[i].args.parentComponentId || 'root',
-            )
-          } else if (arr[i].functionName === 'updateProps') {
-            await updateProps(
-              arr[i].args.componentId,
-              arr[i].args.prop,
-              arr[i].args.value,
-            )
-          } else if (arr[i].functionName === 'deleteComponent') {
-            await deleteComponent(arr[i].args.componentId)
-          } else if (arr[i].functionName === 'moveComponent') {
-            await moveComponent(arr[i].args.componentId, arr[i].args.parentId)
-          } else if (arr[i].functionName === 'changeIndex') {
-            await changeIndex(arr[i].args.componentId, arr[i].args.targetIndex)
+            try { 
+            console.log(arr[i])
+            if (arr[i].functionName === 'addComponent') {
+              await addComponent(
+                arr[i].args.type,
+                arr[i].args.componentId,
+                arr[i].args.parentComponentId || 'root',
+              )
+            } else if (arr[i].functionName === 'updateProps') {
+              await updateProps(
+                arr[i].args.componentId,
+                arr[i].args.prop,
+                arr[i].args.value,
+              )
+            } else if (arr[i].functionName === 'deleteComponent') {
+              await deleteComponent(arr[i].args.componentId)
+            } else if (arr[i].functionName === 'moveComponent') {
+              await moveComponent(arr[i].args.componentId, arr[i].args.parentId)
+            } else if (arr[i].functionName === 'changeIndex') {
+              await changeIndex(arr[i].args.componentId, arr[i].args.targetIndex)
+            }
           }
-        }
+          catch (exc){
+            console.log(exc)
+          }
+          }
       })
       .catch(err => console.error(err))
       .finally(() => {
